@@ -13,7 +13,8 @@ PDIR = libpng
 LDIR = lcms2
 QDIR = pngquant
 
-CFLAGS = -Wall -O2 -fopenmp -fvisibility=hidden
+# Building pngquant using -flto may fail on older versions of GCC
+CFLAGS = -Wall -O2 -msse -fopenmp -flto -fvisibility=hidden
 CPPFLAGS = -DNDEBUG -D_LARGEFILE64_SOURCE=1 -DUSE_SSE=1 -DUSE_LCMS=1 \
   -DIMAGEQUANT_EXPORTS \
   -I $(ZDIR) -I $(PDIR) -I $(LDIR)/include
@@ -27,9 +28,6 @@ ifeq ($(OS),Windows_NT)
     CC = gcc
   endif
 endif
-
-# Building pngquant using -flto failed, so we are only building the other
-# libraries with it.
 
 objs_lpngq := $(patsubst %.c,%.o,$(wildcard $(QDIR)/lib/*.c))
 
@@ -61,13 +59,13 @@ $(QDIR)/lib/%.o : $(QDIR)/lib/%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(pngq_flags) -c -o $@ $<
 
 $(ZDIR)/%.o : $(ZDIR)/%.c
-	$(CC) -flto $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 $(PDIR)/%.o : $(PDIR)/%.c
-	$(CC) -flto $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 $(LDIR)/src/%.o : $(LDIR)/src/%.c
-	$(CC) -flto -fno-strict-aliasing $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) -fno-strict-aliasing $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 pngquant.exe: $(objs_pngq) $(objs_lpngq) $(objs_zlib) $(objs_lpng) $(objs_lcms)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
