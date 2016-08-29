@@ -1,0 +1,12 @@
+[submodule "pngquant"]
+	path = pngquant
+	url = https://github.com/pornel/pngquant.git
+[submodule "zlib"]
+	path = zlib
+	url = https://github.com/madler/zlib.git
+[submodule "lcms2"]
+	path = lcms2
+	url = https://github.com/mm2/Little-CMS.git
+[submodule "libpng"]
+	path = libpng
+	url = git://git.code.sf.net/p/libpng/code
