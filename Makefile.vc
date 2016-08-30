@@ -15,7 +15,7 @@ QDIR = pngquant
 CFLAGS = /W2 /O2 /fp:fast /GL /Gw /openmp
 CPPFLAGS = /DNDEBUG /DUSE_SSE=1 /DUSE_LCMS=1 \
   /DIMAGEQUANT_EXPORTS \
-  /I $(ZDIR) /I $(PDIR) /I $(LDIR)/include
+  /I $(ZDIR) /I $(PDIR) /I $(LDIR)\include
 LDFLAGS = /release
 
 !IF "$(PLATFORM)"=="X64" || "$(PLATFORM)"=="x64"
@@ -57,8 +57,8 @@ target = pngquant.exe imagequant.dll
 
 all: $(target)
 
-$(PDIR)/pnglibconf.h: $(PDIR)/scripts/pnglibconf.h.prebuilt
-	copy $< $@
+$(PDIR)\pnglibconf.h: $(PDIR)\scripts\pnglibconf.h.prebuilt
+	copy $(PDIR)\scripts\pnglibconf.h.prebuilt $@
 
 {$(QDIR)}.c{$(QDIR)}.obj::
 	$(CC) /MP $(CFLAGS) $(CPPFLAGS) $(pngq_flags) /Fo$(QDIR)\ /c $<
@@ -82,4 +82,6 @@ imagequant.dll: $(objs_lpngq)
 	$(CC) $(CFLAGS) $(CPPFLAGS) /Fe$@ $** /link /dll $(LDFLAGS) $(LDLIBS)
 
 clean:
-	$(RM) $(objs) $(targets) $(PDIR)/pnglibconf.h
+	$(RM) $(objs) $(targets) $(PDIR)\pnglibconf.h
+
+$(QDIR)\pngquant.obj: $(PDIR)\pnglibconf.h
