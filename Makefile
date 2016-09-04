@@ -13,14 +13,10 @@ PDIR = libpng
 LDIR = lcms2
 QDIR = pngquant
 
-# Building pngquant using -flto may fail on older versions of GCC
-CFLAGS = -Wall -O2 -msse -fopenmp -fvisibility=hidden
+CFLAGS = -std=c99 -Wall -msse2 -mfpmath=sse -O3 -fopenmp \
+  -fno-strict-aliasing -fvisibility=hidden
 CPPFLAGS = -DNDEBUG -D_LARGEFILE64_SOURCE=1 -DUSE_SSE=1 -DUSE_LCMS=1 \
-  -DIMAGEQUANT_EXPORTS \
   -I $(ZDIR) -I $(PDIR) -I $(LDIR)/include
-
-pngq_flags = -fno-math-errno -funroll-loops -fomit-frame-pointer \
-  -fexcess-precision=fast -fno-strict-aliasing
 
 ifeq ($(OS),Windows_NT)
   LDFLAGS += -static -s
@@ -30,6 +26,8 @@ ifeq ($(OS),Windows_NT)
 endif
 
 objs_lpngq := $(patsubst %.c,%.o,$(wildcard $(QDIR)/lib/*.c))
+
+objs_lpngq_dll := $(patsubst %.c,%.pic.o,$(wildcard $(QDIR)/lib/*.c))
 
 objs_pngq := $(QDIR)/pngquant.o $(QDIR)/rwpng.o
 
@@ -43,7 +41,7 @@ objs_lpng := $(PDIR)/png.o $(PDIR)/pngerror.o $(PDIR)/pngget.o \
 
 objs_lcms := $(patsubst %.c,%.o,$(wildcard $(LDIR)/src/*.c))
 
-objs = $(objs_lpngq) $(objs_zlib) $(objs_lpng) $(objs_lcms)
+objs = $(objs_lpngq) $(objs_lpngq_dll) $(objs_zlib) $(objs_lpng) $(objs_lcms)
 
 target = pngquant.exe imagequant.dll
 
@@ -53,10 +51,13 @@ $(PDIR)/pnglibconf.h: $(PDIR)/scripts/pnglibconf.h.prebuilt
 	cp $< $@
 
 $(QDIR)/%.o : $(QDIR)/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(pngq_flags) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 $(QDIR)/lib/%.o : $(QDIR)/lib/%.c
-	$(CC) $(CFLAGS) $(CPPFLAGS) $(pngq_flags) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+
+$(QDIR)/lib/%.pic.o : $(QDIR)/lib/%.c
+	$(CC) $(CFLAGS) $(CPPFLAGS) -DIMAGEQUANT_EXPORTS -c -o $@ $<
 
 $(ZDIR)/%.o : $(ZDIR)/%.c
 	$(CC) -flto $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
@@ -65,12 +66,12 @@ $(PDIR)/%.o : $(PDIR)/%.c
 	$(CC) -flto $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 $(LDIR)/src/%.o : $(LDIR)/src/%.c
-	$(CC) -flto -fno-strict-aliasing $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) -flto $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 pngquant.exe: $(objs_pngq) $(objs_lpngq) $(objs_zlib) $(objs_lpng) $(objs_lcms)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-imagequant.dll: $(objs_lpngq)
+imagequant.dll: $(objs_lpngq_dll)
 	$(CC) -shared $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@ \
 	-Wl,--output-def,imagequant.def,--out-implib,imagequant.a
 

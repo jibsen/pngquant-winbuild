@@ -5,16 +5,16 @@
 ##
 
 .SUFFIXES:
-.SUFFIXES: .obj .c
+.SUFFIXES: .obj .dllobj .c
 
 ZDIR = zlib
 PDIR = libpng
 LDIR = lcms2
 QDIR = pngquant
 
-CFLAGS = /W2 /O2 /fp:fast /GL /Gw /openmp
+CFLAGS = /W3 /O2 /fp:fast /GL /Gw /openmp
 CPPFLAGS = /DNDEBUG /DUSE_SSE=1 /DUSE_LCMS=1 \
-  /DIMAGEQUANT_EXPORTS \
+  /D_CRT_NONSTDC_NO_DEPRECATE /D_CRT_SECURE_NO_WARNINGS \
   /I $(ZDIR) /I $(PDIR) /I $(LDIR)\include
 LDFLAGS = /release
 
@@ -27,6 +27,8 @@ LDFLAGS = $(LDFLAGS) /opt:ref /subsystem:console,5.01
 objs_lpngq = $(QDIR)\lib\blur.obj $(QDIR)\lib\libimagequant.obj \
   $(QDIR)\lib\mediancut.obj $(QDIR)\lib\mempool.obj $(QDIR)\lib\nearest.obj \
   $(QDIR)\lib\pam.obj $(QDIR)\lib\viter.obj
+
+objs_lpngq_dll = $(objs_lpngq:.obj=.dllobj)
 
 objs_pngq = $(QDIR)\pngquant.obj $(QDIR)\rwpng.obj
 
@@ -51,7 +53,7 @@ objs_lcms = $(LDIR)\src\cmsalpha.obj $(LDIR)\src\cmscam02.obj \
   $(LDIR)\src\cmssamp.obj $(LDIR)\src\cmssm.obj $(LDIR)\src\cmstypes.obj \
   $(LDIR)\src\cmsvirt.obj $(LDIR)\src\cmswtpnt.obj $(LDIR)\src\cmsxform.obj
 
-objs = $(objs_lpngq) $(objs_zlib) $(objs_lpng) $(objs_lcms)
+objs = $(objs_lpngq) $(objs_lpngq_dll) $(objs_zlib) $(objs_lpng) $(objs_lcms)
 
 target = pngquant.exe imagequant.dll
 
@@ -66,6 +68,9 @@ $(PDIR)\pnglibconf.h: $(PDIR)\scripts\pnglibconf.h.prebuilt
 {$(QDIR)\lib}.c{$(QDIR)\lib}.obj::
 	$(CC) /MP $(CFLAGS) $(CPPFLAGS) $(pngq_flags) /Fo$(QDIR)\lib\ /c $<
 
+{$(QDIR)\lib}.c{$(QDIR)\lib}.dllobj::
+	$(CC) /MP $(CFLAGS) $(CPPFLAGS) $(pngq_flags) /DIMAGEQUANT_EXPORTS /Fo$(QDIR)\lib\ /c $<
+
 {$(ZDIR)}.c{$(ZDIR)}.obj::
 	$(CC) /MP $(CFLAGS) $(CPPFLAGS) /Fo$(ZDIR)\ /c $<
 
@@ -78,7 +83,7 @@ $(PDIR)\pnglibconf.h: $(PDIR)\scripts\pnglibconf.h.prebuilt
 pngquant.exe: $(objs_pngq) $(objs_lpngq) $(objs_zlib) $(objs_lpng) $(objs_lcms)
 	$(CC) $(CFLAGS) $(CPPFLAGS) /Fe$@ $** /link $(LDFLAGS) $(LDLIBS)
 
-imagequant.dll: $(objs_lpngq)
+imagequant.dll: $(objs_lpngq_dll)
 	$(CC) $(CFLAGS) $(CPPFLAGS) /Fe$@ $** /link /dll $(LDFLAGS) $(LDLIBS)
 
 clean:
