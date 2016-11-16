@@ -13,7 +13,7 @@ PDIR = libpng
 LDIR = lcms2
 QDIR = pngquant
 
-CFLAGS = -std=c99 -Wall -msse2 -mfpmath=sse -O3 -fopenmp \
+CFLAGS = -std=c99 -Wall -msse2 -mfpmath=sse -O3 -fopenmp -flto \
   -fno-strict-aliasing -fvisibility=hidden
 CPPFLAGS = -DNDEBUG -D_LARGEFILE64_SOURCE=1 -DUSE_SSE=1 -DUSE_LCMS=1 \
   -I $(ZDIR) -I $(PDIR) -I $(LDIR)/include
@@ -60,13 +60,13 @@ $(QDIR)/lib/%.pic.o : $(QDIR)/lib/%.c
 	$(CC) $(CFLAGS) $(CPPFLAGS) -DIMAGEQUANT_EXPORTS -c -o $@ $<
 
 $(ZDIR)/%.o : $(ZDIR)/%.c
-	$(CC) -flto $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 $(PDIR)/%.o : $(PDIR)/%.c
-	$(CC) -flto $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 $(LDIR)/src/%.o : $(LDIR)/src/%.c
-	$(CC) -flto $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 pngquant.exe: $(objs_pngq) $(objs_lpngq) $(objs_zlib) $(objs_lpng) $(objs_lcms)
 	$(CC) $(CFLAGS) $(CPPFLAGS) $(LDFLAGS) $^ $(LDLIBS) -o $@
