@@ -81,7 +81,7 @@ $(PDIR)\pnglibconf.h: $(PDIR)\scripts\pnglibconf.h.prebuilt
 	$(CC) /MP $(CFLAGS) $(CPPFLAGS) /Fo$(LDIR)\src\ /c $<
 
 pngquant.exe: $(objs_pngq) $(objs_lpngq) $(objs_zlib) $(objs_lpng) $(objs_lcms)
-	$(CC) $(CFLAGS) $(CPPFLAGS) /Fe$@ $** /link $(LDFLAGS) $(LDLIBS)
+	$(CC) $(CFLAGS) $(CPPFLAGS) /Fe$@ $** /link setargv.obj $(LDFLAGS) $(LDLIBS)
 
 imagequant.dll: $(objs_lpngq_dll)
 	$(CC) $(CFLAGS) $(CPPFLAGS) /Fe$@ $** /link /dll $(LDFLAGS) $(LDLIBS)
