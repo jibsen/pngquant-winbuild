@@ -68,8 +68,8 @@ $(PDIR)\pnglibconf.h: $(PDIR)\scripts\pnglibconf.h.prebuilt
 {$(QDIR)\lib}.c{$(QDIR)\lib}.obj::
 	$(CC) /MP $(CFLAGS) $(CPPFLAGS) $(pngq_flags) /Fo$(QDIR)\lib\ /c $<
 
-{$(QDIR)\lib}.c{$(QDIR)\lib}.dllobj::
-	$(CC) /MP $(CFLAGS) $(CPPFLAGS) $(pngq_flags) /DIMAGEQUANT_EXPORTS /Fo$(QDIR)\lib\ /c $<
+{$(QDIR)\lib}.c{$(QDIR)\lib}.dllobj:
+	$(CC) $(CFLAGS) $(CPPFLAGS) $(pngq_flags) /DIMAGEQUANT_EXPORTS /Fo$@ /c $<
 
 {$(ZDIR)}.c{$(ZDIR)}.obj::
 	$(CC) /MP $(CFLAGS) $(CPPFLAGS) /Fo$(ZDIR)\ /c $<
