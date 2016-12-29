@@ -12,7 +12,7 @@ PDIR = libpng
 LDIR = lcms2
 QDIR = pngquant
 
-CFLAGS = /W3 /O2 /fp:fast /GL /Gw /openmp
+CFLAGS = /W2 /O2 /fp:fast /GL /Gw /openmp
 CPPFLAGS = /DNDEBUG /DUSE_SSE=1 /DUSE_LCMS=1 \
   /D_CRT_NONSTDC_NO_DEPRECATE /D_CRT_SECURE_NO_WARNINGS \
   /I $(ZDIR) /I $(PDIR) /I $(LDIR)\include
