@@ -15,7 +15,7 @@ QDIR = pngquant
 CFLAGS = /W2 /O2 /fp:fast /GL /Gw /openmp
 CPPFLAGS = /DNDEBUG /DUSE_SSE=1 /DUSE_LCMS=1 \
   /D_CRT_NONSTDC_NO_DEPRECATE /D_CRT_SECURE_NO_WARNINGS \
-  /I $(ZDIR) /I $(PDIR) /I $(LDIR)\include
+  /I $(ZDIR) /I $(PDIR) /I $(LDIR)\include /I $(QDIR)\lib
 LDFLAGS = /release
 
 !IF "$(PLATFORM)"=="X64" || "$(PLATFORM)"=="x64"
@@ -24,13 +24,13 @@ LDFLAGS = $(LDFLAGS) /opt:ref,icf /subsystem:console,5.02
 LDFLAGS = $(LDFLAGS) /opt:ref /subsystem:console,5.01
 !ENDIF
 
-objs_lpngq = $(QDIR)\lib\blur.obj $(QDIR)\lib\libimagequant.obj \
-  $(QDIR)\lib\mediancut.obj $(QDIR)\lib\mempool.obj $(QDIR)\lib\nearest.obj \
-  $(QDIR)\lib\pam.obj $(QDIR)\lib\viter.obj
+objs_lpngq = $(QDIR)\lib\blur.obj $(QDIR)\lib\kmeans.obj \
+  $(QDIR)\lib\libimagequant.obj $(QDIR)\lib\mediancut.obj $(QDIR)\lib\mempool.obj \
+  $(QDIR)\lib\nearest.obj $(QDIR)\lib\pam.obj
 
 objs_lpngq_dll = $(objs_lpngq:.obj=.dllobj)
 
-objs_pngq = $(QDIR)\pngquant.obj $(QDIR)\rwpng.obj
+objs_pngq = $(QDIR)\pngquant.obj $(QDIR)\pngquant_opts.obj $(QDIR)\rwpng.obj
 
 objs_zlib = $(ZDIR)\adler32.obj $(ZDIR)\compress.obj $(ZDIR)\crc32.obj \
   $(ZDIR)\deflate.obj $(ZDIR)\gzclose.obj $(ZDIR)\gzlib.obj $(ZDIR)\gzread.obj \

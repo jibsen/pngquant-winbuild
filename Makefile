@@ -16,7 +16,7 @@ QDIR = pngquant
 CFLAGS = -std=c99 -Wall -msse2 -mfpmath=sse -O3 -fopenmp -flto \
   -fno-strict-aliasing -fvisibility=hidden
 CPPFLAGS = -DNDEBUG -D_LARGEFILE64_SOURCE=1 -DUSE_SSE=1 -DUSE_LCMS=1 \
-  -I $(ZDIR) -I $(PDIR) -I $(LDIR)/include
+  -I $(ZDIR) -I $(PDIR) -I $(LDIR)/include -I $(QDIR)/lib
 
 ifeq ($(OS),Windows_NT)
   LDFLAGS += -static -s
@@ -25,11 +25,13 @@ ifeq ($(OS),Windows_NT)
   endif
 endif
 
-objs_lpngq := $(patsubst %.c,%.o,$(wildcard $(QDIR)/lib/*.c))
+objs_lpngq := $(QDIR)/lib/blur.o $(QDIR)/lib/kmeans.o \
+  $(QDIR)/lib/libimagequant.o $(QDIR)/lib/mediancut.o $(QDIR)/lib/mempool.o \
+  $(QDIR)/lib/nearest.o $(QDIR)/lib/pam.o
 
-objs_lpngq_dll := $(patsubst %.c,%.pic.o,$(wildcard $(QDIR)/lib/*.c))
+objs_lpngq_dll := $(patsubst %.o,%.pic.o,$(objs_lpngq))
 
-objs_pngq := $(QDIR)/pngquant.o $(QDIR)/rwpng.o
+objs_pngq := $(QDIR)/pngquant.o $(QDIR)/pngquant_opts.o $(QDIR)/rwpng.o
 
 objs_zlib := $(patsubst %.c,%.o,$(wildcard $(ZDIR)/*.c))
 
