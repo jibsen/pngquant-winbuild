@@ -21,4 +21,4 @@ To initialize the submodules, use
 git submodule update --init --recursive
 ~~~
 
-And then build with either mingw-w64 (make) or MSVC (NMake).
+And then build with mingw-w64 (make).
