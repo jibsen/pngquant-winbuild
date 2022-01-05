@@ -43,7 +43,7 @@ objs_lpng := $(PDIR)/png.o $(PDIR)/pngerror.o $(PDIR)/pngget.o \
 
 objs_lcms := $(patsubst %.c,%.o,$(wildcard $(LDIR)/src/*.c))
 
-objs = $(objs_lpngq) $(objs_lpngq_dll) $(objs_zlib) $(objs_lpng) $(objs_lcms)
+objs = $(objs_lpngq) $(objs_lpngq_dll) $(objs_pngq) $(objs_zlib) $(objs_lpng) $(objs_lcms)
 
 target = pngquant.exe imagequant.dll
 
